@@ -74,8 +74,8 @@ class Match_Interface(QDialog):
 
     def accept_match(self):
         print(self.headers)
-        self.worksheet.write(0, 0, str(self.mentor.get_name()))
-        self.worksheet.write(0, 1, str(self.student.get_name()))
+        self.worksheet.write(self.line, 0, str(self.mentor.get_name()))
+        self.worksheet.write(self.line, 1, str(self.student.get_name()))
         self.line += 1
         self.app.quit()
 

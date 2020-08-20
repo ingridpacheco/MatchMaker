@@ -29,12 +29,12 @@ def main(student_file, volunteer_file, output_file):
                 for idx_mentor, val_mentor in enumerate(f2.get_values()):
 
                     vital_properties = f2.get_properties(idx_mentor, 'mentor')
-                    mentor = Person(f2.get_name(idx_mentor), vital_properties, val_mentor, hours[idx_mentor])
+                    mentor = Person(f2.get_name(idx_mentor), f2.get_email(idx_mentor), f2.get_phone(idx_mentor), vital_properties, val_mentor, hours[idx_mentor])
 
                     for idx_student, val_student in enumerate(f1.get_values()):
 
                         student_vital_properties = f1.get_properties(idx_student, 'student')
-                        student = Person(f1.get_name(idx_student), student_vital_properties, val_student)
+                        student = Person(f1.get_name(idx_student), f1.get_email(idx_student), f1.get_phone(idx_student), student_vital_properties, val_student)
 
                         matches.check_match(student, mentor)
     workbook.close()

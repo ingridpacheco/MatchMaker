@@ -58,10 +58,10 @@ class File:
 
     def get_properties(self, index, type):
         properties = []
+        properties.append(self.courses_list[index])
         properties.append(self.subjects_list[index])
         properties.append(self.ages_list[index])
         properties.append(self.states_list[index])
-        properties.append(self.courses_list[index])
         return properties
 
     def set_properties(self, type):
