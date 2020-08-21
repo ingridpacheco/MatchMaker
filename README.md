@@ -1,6 +1,6 @@
 ![Image of Match Maker](img/matchmaker.png)
 
-Match Maker is a program that finds matches between two instances in different spreadsheets and outputs them in another file.
+Match Maker is a program that finds matches between two instances in different spreadsheets and outputs them in another file. In this first version, initially designed to work for ExplicaENEM, it has previously selected headers, not allowing flexiblity on their choices.
 
 ## Dependencies
 - pandas
