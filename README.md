@@ -6,6 +6,7 @@ Match Maker is a program that finds matches between two instances of different s
 - pandas
 - xlrd
 - PyQt5 (5.9.2)
+- xlsxwriter
 
 ## How to use
 
