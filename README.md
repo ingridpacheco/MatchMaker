@@ -1,6 +1,6 @@
 ![Image of Match Maker](img/matchmaker.png)
 
-Match Maker is a program that finds matches between two instances of different spreadsheets and outputs them in another file.
+Match Maker is a program that finds matches between two instances in different spreadsheets and outputs them in another file.
 
 ## Dependencies
 - pandas
