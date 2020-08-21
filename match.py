@@ -10,45 +10,50 @@ class Match:
         worksheet,
         quantity_of_headers,
         list_of_matches = {},
-        actual_line = 1
+        actual_line = 1,
+        mentors_matched = []
     ):
         self.worksheet = worksheet
         self.quantity_of_headers = quantity_of_headers
         self.list_of_matches = list_of_matches
         self.actual_line = actual_line
+        self.mentors_matched = mentors_matched
+
+    def get_match(self, student, mentor):
+            match = 0
+            total = 0
+            student_name = student.get_name()
+            mentor_name = mentor.get_name()
+            for idx, prop_value in enumerate(mentor.get_vital_properties()):
+                mentor_props = str(prop_value).split(',')
+                total += len(mentor_props)
+                student_props = str(student.get_property(idx)).split(',')
+
+                match_props = set(mentor_props).intersection(student_props)
+
+                match += len(match_props)
+
+            percentage = match * 100 / total
+
+            actual_list = self.list_of_matches.get(student_name)
+            if actual_list == None:
+                self.list_of_matches[student_name] = {mentor_name: percentage}
+            else:
+                self.list_of_matches[student_name][mentor_name] = percentage
 
     def check_match(self, student, mentor):
-        match = 0
-        total = 0
-        reach = 60
-        for idx, prop_value in enumerate(mentor.get_vital_properties()):
-            mentor_props = str(prop_value).split(',')
-            total += len(mentor_props)
-            student_props = str(student.get_property(idx)).split(',')
+        app = QApplication([])
+        app = self.define_style(app)
 
-            match_props = set(mentor_props).intersection(student_props)
+        match_app = Match_Interface(student, mentor, app, self.worksheet, self.quantity_of_headers, self.actual_line)
 
-            match += len(match_props)
+        match_app.show()
+        app.exec()
+        self.actual_line = match_app.get_line()
+        return match_app.get_acceptation()
 
-        percentage = match * 100 / total
-        
-        if (percentage > reach):
-            app = QApplication([])
-            app = self.define_style(app)
-
-            print(self.actual_line)
-
-            match_app = Match_Interface(student, mentor, app, self.worksheet, self.quantity_of_headers, self.actual_line)
-
-            match_app.show()
-            app.exec()
-            self.actual_line = match_app.get_line()
-
-        actual_list = self.list_of_matches.get(mentor.get_name())
-        if actual_list == None:
-            self.list_of_matches[mentor.get_name()] = {student.get_name(): percentage}
-        else:
-            self.list_of_matches[mentor.get_name()][student.get_name()] = percentage
+    def get_mentors(self):
+        return self.mentors_matched
 
     def define_style(self, app):
         app.setStyle("Fusion")
