@@ -71,4 +71,3 @@ if __name__ == "__main__":
     mentor_file = str(input("Mentors file: "))
     output_file = str(input("Output file: "))
     main(student_file, mentor_file, output_file)
-    # main("/Users/Ingrid.Pacheco/Downloads/Formulário-Alunos(respostas).xlsx", "/Users/Ingrid.Pacheco/Downloads/Mentores-Pareamento.xlsx", "/Users/Ingrid.Pacheco/Downloads/alunos-selecionados-mentoria-turma1.xlsx")
