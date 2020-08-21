@@ -8,7 +8,8 @@ class Match_Interface(QDialog):
         app,
         worksheet,
         headers,
-        line
+        line,
+        accepted = False
     ):
 
         self.student = student
@@ -17,6 +18,7 @@ class Match_Interface(QDialog):
         self.worksheet = worksheet
         self.headers = headers
         self.line = line
+        self.accepted = accepted
 
         super(Match_Interface, self).__init__()
 
@@ -73,14 +75,20 @@ class Match_Interface(QDialog):
         self.mentorGroupBox.setLayout(layout)
 
     def accept_match(self):
-        print(self.headers)
-        self.worksheet.write(self.line, 0, str(self.mentor.get_name()))
-        self.worksheet.write(self.line, 1, str(self.student.get_name()))
+        output = self.mentor.get_information("mentor") + self.student.get_information("student")
+        
+        for i in range(self.headers):
+            self.worksheet.write(self.line, i, str(output[i]))
+
         self.line += 1
+        self.accepted = True
         self.app.quit()
 
     def reject_match(self):
         self.app.quit()
+
+    def get_acceptation(self):
+        return self.accepted
 
     def render_properties(self, properties, layout):
         for property_info in properties:
