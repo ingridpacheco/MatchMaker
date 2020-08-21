@@ -5,14 +5,17 @@ import xlsxwriter
 from read_file import File
 from person import Person
 from match import Match
+from people import People
 
 def main(student_file, volunteer_file, output_file):
 
     workbook = xlsxwriter.Workbook('/Users/Ingrid.Pacheco/Desktop/match-output.xlsx')
     worksheet = workbook.add_worksheet()
-    headers = ['nome MENTOR', 'email MENTOR', 'numero MENTOR', 'graduacao MENTOR', 'disciplinas MENTOR' 'idade MENTOR', 'estado MENTOR', 'nome ALUNO', 'email ALUNO', 'numero ALUNO', 'graduacao ALUNO', 'disciplinas ALUNO', 'dificuldades', 'interesse', 'idade ALUNO', 'estado ALUNO']
+    headers = ['nome MENTOR', 'email MENTOR', 'numero MENTOR', 'graduacao MENTOR', 'disciplinas MENTOR', 'idade MENTOR', 'estado MENTOR', 'nome ALUNO', 'email ALUNO', 'numero ALUNO', 'graduacao ALUNO', 'disciplinas ALUNO', 'idade ALUNO', 'estado ALUNO', 'dificuldades', 'interesse']
     worksheet = add_headers(worksheet, headers)
     matches = Match(worksheet, len(headers))
+    students = People()
+    mentors = People()
     with pd.ExcelFile(student_file) as firstxls:
         df1 = pd.read_excel(firstxls, 0)
 
@@ -29,58 +32,43 @@ def main(student_file, volunteer_file, output_file):
                 for idx_mentor, val_mentor in enumerate(f2.get_values()):
 
                     vital_properties = f2.get_properties(idx_mentor, 'mentor')
-                    mentor = Person(f2.get_name(idx_mentor), f2.get_email(idx_mentor), f2.get_phone(idx_mentor), vital_properties, val_mentor, hours[idx_mentor])
+                    mentor = Person(f2.get_name(idx_mentor), f2.get_email(idx_mentor), f2.get_phone(idx_mentor), vital_properties, val_mentor, int(hours[idx_mentor].split('(')[1].split(' ')[0]))
+                    mentors.add_person(mentor)
 
                     for idx_student, val_student in enumerate(f1.get_values()):
 
                         student_vital_properties = f1.get_properties(idx_student, 'student')
-                        student = Person(f1.get_name(idx_student), f1.get_email(idx_student), f1.get_phone(idx_student), student_vital_properties, val_student)
+                        student = Person(f1.get_name(idx_student), f1.get_email(idx_student), f1.get_phone(idx_student), student_vital_properties, val_student, 0, f1.get_additional_properties(idx_student))
+                        students.add_person(student)
 
-                        matches.check_match(student, mentor)
+                        matches.get_match(student, mentor)
+    
+    find_matches(matches, students, mentors)
     workbook.close()
-    # write_results(matches.get_list_of_matches())
 
-    # print(matches.get_list_of_matches())
+def find_matches(matches, students, mentors):
+    mentor_list = []
+
+    for student_name in matches.get_list_of_matches().keys():
+        student = students.get_person(student_name)
+        for mentor_name in sorted(matches.get_list_of_matches()[student_name], key=matches.get_list_of_matches()[student_name].get, reverse=True):
+            mentor = mentors.get_person(mentor_name)
+            if (mentor_name not in mentor_list) and (int(mentor.get_quantity_students()) > 0):
+                accepted = matches.check_match(student, mentor)
+                if (accepted):
+                    print('Match: {} & {}'.format(mentor_name, student_name))
+                    mentor.decrease_quantity_students()
+                    mentor_list.append(mentor_name)
+                    break;
 
 def add_headers(worksheet, headers):
     for i in range(len(headers)):
         worksheet.write(0, i, headers[i])
     return worksheet
 
-# def write_results(matches):
-#     workbook = xlsxwriter.Workbook('/Users/Ingrid.Pacheco/Desktop/match-output.xlsx')
-#     worksheet = workbook.add_worksheet()
-
-#     row = 0
-#     col = 0
-
-#     for mentor in matches.keys():
-#         # print(key)
-#         for student in matches.get(mentor).keys():
-#             worksheet.write(row, col,     mentor)
-#             worksheet.write(row, col + 1, student)
-#             row += 1
-    
-#     workbook.close()
-
-#/Users/Ingrid.Pacheco/Downloads/alunos-selecionados-mentoria-turma1.xlsx
 if __name__ == "__main__":
-    # first_file = str(input("Students file: "))
-    # second_file = str(input("Volunteers file: "))
-    # output_file = str(input("Output file: "))
-    # main(first_file, second_file, output_file)
-    main("/Users/Ingrid.Pacheco/Downloads/Formulário-Alunos(respostas).xlsx", "/Users/Ingrid.Pacheco/Downloads/Mentores-Pareamento.xlsx", "/Users/Ingrid.Pacheco/Downloads/alunos-selecionados-mentoria-turma1.xlsx")
-
-#ALUNOS =>  Carimbo de data/hora, Nome completo, E-mail utilizado no formulário de cadastro, Número de telefone com DDD (WhatsApp), Já sabe qual graduação pretende cursar?, Quais são suas disciplinas preferidas do ENEM?, Na sua visão, quais são as maiores dificuldades que você enfrenta hoje ao se preparar para o ENEM?,Porque você se interessou pela mentoria?, Idade, Estado
-#VOLUNTARIOS => Carimbo de data/hora, Nome completo, E-mail utilizado no formulário de cadastro, Número de telefone com DDD (WhatsApp), Quantas horas por semana você terá para dedicar para a mentoria (não esqueça de levar em consideração o tempo que você já dedica a outras atividades, e eventualmente outros projetos do ExplicaEnem que você é parte).  Dessa maneira, de acordo com sua disponibilidade, poderemos te conectar com a quantidade de mentorados., Li, estou ciente e concordo com o Termo de Compromisso da Mentoria ExplicaEnem. Você pode conferí-lo aqui: https://docs.google.com/document/d/19zEpUVSIRajL3aOn-hroMNiTWzpbFLH9DETz_z6OeTM/edit?usp=sharing, Na sua visão, qual a sua responsabilidade como mentor?, Por que você deseja ser mentor?, Qual graduação você cursa/se graduou?, Quais são suas disciplinas preferidas do ENEM?, Idade, Estado
-# para cada mentor na planilha B, verificar nos alunos:
-# -> Já sabe qual graduação pretende cursar? (aluno) | Qual graduação você cursa/se graduou? (mentor)
-# -> Idade (aluno) | Idade (mentor)
-# -> Estado (aluno) | Estado (mentor)
-# -> Quais são suas disciplinas preferidas do ENEM? (aluno) | Quais são suas disciplinas preferidas do ENEM? (mentor)
-# Para cada mentor, grava a porcentagem de match com cada aluno => {'mentorA': {'Aluno A': 50, 'Aluno B': 70}}... Se match > 80 % já pergunta, se não, guarda no dicionário
-
-#OUTPUT:
-
-#Mentor: Nome, email, numero, ativo (?)
-#Aluno: todas as informações
+    student_file = str(input("Students file: "))
+    mentor_file = str(input("Mentors file: "))
+    output_file = str(input("Output file: "))
+    main(student_file, mentor_file, output_file)
+    # main("/Users/Ingrid.Pacheco/Downloads/Formulário-Alunos(respostas).xlsx", "/Users/Ingrid.Pacheco/Downloads/Mentores-Pareamento.xlsx", "/Users/Ingrid.Pacheco/Downloads/alunos-selecionados-mentoria-turma1.xlsx")
