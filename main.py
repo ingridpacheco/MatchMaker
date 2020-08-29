@@ -48,17 +48,23 @@ def main(student_file, volunteer_file, output_file):
 
 def find_matches(matches, students, mentors):
     mentor_list = []
+    mentor_quantity = len(mentors.get_list())
+    mentor_has_vacancy = mentors.get_names()
 
-    for student_name in matches.get_list_of_matches().keys():
+    while (len(mentor_list) < mentor_quantity) or (len(mentor_has_vacancy) > 0):
+        student_name = list(matches.get_list_of_matches().keys())[0]
         student = students.get_person(student_name)
         for mentor_name in sorted(matches.get_list_of_matches()[student_name], key=matches.get_list_of_matches()[student_name].get, reverse=True):
             mentor = mentors.get_person(mentor_name)
-            if (mentor_name not in mentor_list) and (int(mentor.get_quantity_students()) > 0):
+            if (mentor_name not in mentor_list) or (int(mentor.get_quantity_students()) > 0):
                 accepted = matches.check_match(student, mentor)
                 if (accepted):
                     print('Match: {} & {}'.format(mentor_name, student_name))
                     mentor.decrease_quantity_students()
                     mentor_list.append(mentor_name)
+                    matches.get_list_of_matches().pop(student_name)
+                    if (int(mentor.get_quantity_students()) == 0):
+                        mentor_has_vacancy.remove(mentor_name)
                     break;
 
 def add_headers(worksheet, headers):
