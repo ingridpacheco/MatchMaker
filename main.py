@@ -50,9 +50,10 @@ def find_matches(matches, students, mentors):
     mentor_list = []
     mentor_quantity = len(mentors.get_list())
     mentor_has_vacancy = mentors.get_names()
+    index = 0
 
     while (len(mentor_list) < mentor_quantity) or (len(mentor_has_vacancy) > 0):
-        student_name = list(matches.get_list_of_matches().keys())[0]
+        student_name = list(matches.get_list_of_matches().keys())[index]
         student = students.get_person(student_name)
         for mentor_name in sorted(matches.get_list_of_matches()[student_name], key=matches.get_list_of_matches()[student_name].get, reverse=True):
             mentor = mentors.get_person(mentor_name)
@@ -65,7 +66,24 @@ def find_matches(matches, students, mentors):
                     matches.get_list_of_matches().pop(student_name)
                     if (int(mentor.get_quantity_students()) == 0):
                         mentor_has_vacancy.remove(mentor_name)
-                    break;
+                    break
+                else:
+                    old_index = index
+                    index = get_next_match(index, mentor_has_vacancy, matches)
+                    if old_index != index:
+                        break
+
+def get_next_match(index, mentor_has_vacancy, matches):
+    if len(mentor_has_vacancy) == 1:
+        index = change_index(index, matches)
+    return index
+
+def change_index(index, matches):
+    if index == len(list(matches.get_list_of_matches().keys())) - 1:
+        index = 0
+    else:
+        index += 1
+    return index
 
 def add_headers(worksheet, headers):
     for i in range(len(headers)):
