@@ -9,15 +9,12 @@ class Match:
         self,
         worksheet,
         quantity_of_headers,
-        list_of_matches = {},
-        actual_line = 1,
-        mentors_matched = []
     ):
         self.worksheet = worksheet
         self.quantity_of_headers = quantity_of_headers
-        self.list_of_matches = list_of_matches
-        self.actual_line = actual_line
-        self.mentors_matched = mentors_matched
+        self.list_of_matches = {}
+        self.actual_line = 1
+        self.mentors_matched = []
 
     def get_match(self, student, mentor):
             match = 0
