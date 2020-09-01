@@ -52,7 +52,7 @@ def find_matches(matches, students, mentors):
     mentor_has_vacancy = mentors.get_names()
     index = 0
 
-    while (len(mentor_list) < mentor_quantity) or (len(mentor_has_vacancy) > 0):
+    while ((len(mentor_list) < mentor_quantity) or (len(mentor_has_vacancy) > 0)) and len(matches.get_list_of_matches().keys()) > 0:
         student_name = list(matches.get_list_of_matches().keys())[index]
         student = students.get_person(student_name)
         for mentor_name in sorted(matches.get_list_of_matches()[student_name], key=matches.get_list_of_matches()[student_name].get, reverse=True):
